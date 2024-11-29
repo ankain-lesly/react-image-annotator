@@ -58,7 +58,7 @@ export function LabelManager({ labels, setLabels }: LabelManagerProps) {
             type="color"
             value={newLabelColor}
             onChange={(e) => setNewLabelColor(e.target.value)}
-            className="w-20 border-none bg-danger"
+            className="w-20 border-none bg-dark-l"
           />
           <Input
             value={newLabelName}

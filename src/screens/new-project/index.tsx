@@ -8,7 +8,6 @@ import { Label, LabelManager } from "./label-manager";
 import toast from "react-hot-toast";
 import { useContextProvider } from "@/store/context-provider";
 import { useNavigate } from "react-router-dom";
-import { DemoShapesApp } from "../workspace/project/render-shape";
 
 export default function NewProjectPage() {
   const { setProject, setModal } = useContextProvider();
@@ -90,8 +89,6 @@ export default function NewProjectPage() {
           </button>
         </div>
       </section>
-
-      <DemoShapesApp />
     </div>
   );
 }

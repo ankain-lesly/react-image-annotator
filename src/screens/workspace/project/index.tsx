@@ -1,5 +1,4 @@
 import { ProjectHeader } from "@/components/menus/project-header";
-import { Button } from "@/components/ui/button";
 import { Check, Images } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Label } from "../../new-project/label-manager";
@@ -153,13 +152,14 @@ export default function WorkspacePage() {
 
       {/* Div Actions */}
       <div>
-        <Button
-          variant={"secondary"}
+        <button
           onClick={handleLoadImages}
-          className="flex gap-2 rounded-full bg-dark-l fixed bottom-4 right-2 shadow-md ">
+          className={`btn flex gap-2 items-center rounded-full bg-dark-l fixed bottom-4 right-2 shadow-lg ${
+            activeLabel ? "btn-primary" : " btn-dark-l"
+          } `}>
           <Images />
-          <span className="font-bold">images</span>
-        </Button>
+          {!activeLabel && <span className="font-bold">images</span>}
+        </button>
       </div>
     </div>
   );

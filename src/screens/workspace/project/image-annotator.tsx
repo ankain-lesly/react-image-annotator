@@ -16,9 +16,16 @@ import {
   useRef,
   useState,
 } from "react";
-import { loadImageBlob, mergeAnnotations } from "@/lib/utils";
+import { getHeight, loadImageBlob, mergeAnnotations } from "@/lib/utils";
 import toast from "react-hot-toast";
 import ShapeRenderer from "./render-shape";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Monitor,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
 
 interface Props {
   image: FileProps;
@@ -36,7 +43,8 @@ const ImageAnnotator = forwardRef<any, Props>(
     );
     const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
     const [drawing, setDrawing] = useState(false);
-    // const stageRef = useRef<any>(null);
+    const [isZoomed, setIsZoomed] = useState(false);
+    const stageContainerRef = useRef<HTMLDivElement>(null);
     const trRef = useRef<any>(null);
     const [newAnnotation, setNewAnnotation] = useState<AnnotationProps | null>(
       null
@@ -126,19 +134,81 @@ const ImageAnnotator = forwardRef<any, Props>(
       );
     };
 
+    console.log(stageContainerRef.current?.clientWidth);
+
+    const stageContainerWidth =
+      stageContainerRef.current?.clientWidth || window.innerWidth - 20;
+    const stageWidth = Math.min(stageSize.width, stageContainerWidth);
+
+    //
+    console.log("VAL: ");
+    console.log(
+      getHeight(stageSize.width, stageSize.height, stageContainerWidth)
+    );
+    console.log(stageSize.height);
     return (
-      <section className="section-p h-[calc(100vh-60px)] flex-center">
+      <section className="py-8 h-[calc(100vh-60px)] flex-center">
         <div className="container-x">
-          <div className="w-max max-w-full mx-auto">
-            <h4 className="text-lg mb-2" style={{ color: label?.color }}>
-              {label?.name}
-            </h4>
+          <div className="w-max_ max-w-full mx-auto">
+            <header className="flex items-center justify-between mb-4">
+              <h4
+                className="text-lg flex-center gap-2"
+                style={{ color: label?.color }}>
+                <Monitor /> {label?.name}
+              </h4>
+
+              <div className="flex gap-4 md:hidden">
+                <button
+                  className="hover:opacity-70 size-7 bg-light rounded-full text-dark"
+                  onClick={() => {
+                    stageContainerRef.current?.scrollBy({
+                      left: -100,
+                      behavior: "smooth",
+                    });
+                  }}>
+                  <ChevronLeft className="size-5" />
+                </button>
+                <button
+                  className="hover:opacity-70 size-7 bg-light rounded-full text-dark"
+                  onClick={() => {
+                    stageContainerRef.current?.scrollBy({
+                      left: 100,
+                      behavior: "smooth",
+                    });
+                  }}>
+                  <ChevronRight className="size-5" />
+                </button>
+              </div>
+
+              <div>
+                <button
+                  className="hover:opacity-70 size-7 bg-light rounded-full text-dark md:hidden"
+                  onClick={() => setIsZoomed((prev) => !prev)}>
+                  {!isZoomed ? (
+                    <ZoomIn className="size-5" />
+                  ) : (
+                    <ZoomOut className="size-5" />
+                  )}
+                </button>
+              </div>
+            </header>
             <div
-              className="rounded-3xl border-4 overflow-auto"
-              style={{ borderColor: label?.color }}>
+              className="rounded-3xl outline outline-4 overflow-auto no-scrollbar"
+              ref={stageContainerRef}
+              style={{ outlineColor: label?.color }}>
               <Stage
-                width={stageSize.width}
-                height={stageSize.height}
+                // width={stageSize.width}
+                // height={stageSize.height}
+                width={!isZoomed ? stageSize.width : stageContainerWidth}
+                height={
+                  !isZoomed
+                    ? stageSize.height
+                    : getHeight(
+                        stageWidth,
+                        stageSize.height,
+                        stageContainerWidth
+                      )
+                }
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
@@ -151,8 +221,18 @@ const ImageAnnotator = forwardRef<any, Props>(
                   {loadedImage && (
                     <KonvaImage
                       image={loadedImage}
-                      width={stageSize.width}
-                      height={stageSize.height}
+                      // width={stageSize.width}
+                      // height={stageSize.height}
+                      width={!isZoomed ? stageSize.width : stageContainerWidth}
+                      height={
+                        !isZoomed
+                          ? stageSize.height
+                          : getHeight(
+                              stageWidth,
+                              stageSize.height,
+                              stageContainerWidth
+                            )
+                      }
                     />
                   )}
                   {annotations.map((ann) => (

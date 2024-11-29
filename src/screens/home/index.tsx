@@ -1,5 +1,4 @@
 import { MainHeader } from "@/components/menus/main-header";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 
 export default function HomePage() {

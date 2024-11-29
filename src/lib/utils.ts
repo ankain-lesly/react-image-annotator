@@ -6,11 +6,21 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
+// Image Blob
 export const loadImageBlob = (file: FileProps) => {
   return URL.createObjectURL(file);
 };
 
+// Resize Image
+export function getHeight(width: number, height: number, newWidth: number) {
+  // Calculate the aspect ratio
+  const aspectRatio = width / height;
+
+  // Calculate the new height maintaining the aspect ratio
+  return newWidth / aspectRatio;
+}
+
+// Random color
 export const getRandomColor = (): string => {
   const randomColor = Math.floor(Math.random() * 16777215).toString(16);
   return `#${randomColor.padStart(6, "0")}`;
