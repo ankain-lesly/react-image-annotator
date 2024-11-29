@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "checkJs": false,
+    "allowJs": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+    // "baseUrl": "./src"
+    //   "paths": {
+    //     "@screens/*": ["./screens/*"],
+    //     "@hooks/*": ["./hooks/*"],
+    //     "@enums/*": ["./enums/*"],
+    //     "@constants/*": ["./constants/*"],
+    //     "@api/*": ["./api/*"],
+    //     "@lib/*": ["./lib/*"],
+    //     // >>
+    //     "@cards/*": ["./components/cards/*"],
+    //     "@buttons/*": ["./components/buttons/*"],
+    //     "@modals/*": ["./components/modals/*"],
+    //     "@sections/*": ["./components/sections/*"]
+    //   }
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
+}

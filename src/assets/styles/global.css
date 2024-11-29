@@ -1,0 +1,192 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Krona+One&family=Quicksand:wght@300;400;500;700&display=swap"); */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Colors */
+    /* #25003e */
+    --hsl-clr-warning: 60, 100%, 50%;
+    /* --hsl-clr-warning: 29, 100%, 62%; */
+
+    /* --hsl-clr-primary: 213, 73%, 22%; */
+    --hsl-clr-primary: 217, 91%, 60%;
+    /* --hsl-clr-primary: 217, 91%, 60%; */
+    /* --hsl-clr-primary: 257, 80%, 40%; */
+
+    /* --color-radial: #0bf4f3; */
+    --hsl-clr-secondary: 271, 81%, 56%;
+    /* --hsl-clr-secondary: 217, 91%, 60%; */
+
+    /* --hsl-clr-danger: 334, 100%, 67%; */
+    --hsl-clr-danger: 8, 100%, 59%;
+    --hsl-clr-deem: 8, 100%, 59%;
+    --hsl-clr-success: 136, 90%, 52%;
+
+    --hsl-clr-dark: 220, 43%, 7%;
+    --hsl-clr-dark-l: 240, 29%, 17%;
+    --hsl-clr-light: 210, 50%, 98%;
+    /* --hsl-clr-light: 0, 0%, 93%; */
+
+    --hsl-clr-dark-variant: 240, 42%, 30%;
+    --hsl-clr-dark-xxx: 231, 15%, 25%;
+    --hsl-clr-muted: 213, 16%, 56%;
+
+    --gradient-main: linear-gradient(89.98deg, #ae67fa 6.85%, #ff8a71 50%);
+    --gradient-radial: radial-gradient(
+      #ae67fa 6.85%,
+      #ff8a71 50%,
+      transparent,
+      transparent,
+      transparent
+    );
+    --radius: 0.5rem;
+  }
+  .bg-radial-bs {
+    box-shadow: 0 0 55px 80px hsl(var(--hsl-clr-secondary)),
+      0 0 410px 30px hsl(var(--hsl-clr-secondary)),
+      0 0 420px 20px hsl(var(--hsl-clr-secondary)),
+      0 0 440px hsl(var(--hsl-clr-secondary)),
+      0 0 580px hsl(var(--hsl-clr-secondary));
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* cursor: none; */
+  }
+
+  /* @media (pref) */
+
+  html {
+    /* font-size: 62.5%; */
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply text-base bg-dark text-light leading-tight;
+    font-weight: 500;
+    font-family: "Quicksand", sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1 {
+    @apply text-6xl font-bold;
+  }
+  h2 {
+    @apply text-4xl font-bold;
+  }
+  h3 {
+    @apply text-2xl font-bold;
+  }
+  h4 {
+    @apply text-xl font-bold;
+  }
+  h5 {
+    @apply text-base font-bold;
+  }
+  h6 {
+    @apply text-sm font-bold;
+  }
+  img,
+  svg {
+    display: inline-block;
+    max-width: 100%;
+    max-height: 100%;
+  }
+  /* a {
+    @apply leading-snug;
+  } */
+
+  input::placeholder {
+    @apply text-muted;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply py-2 font-semibold px-4 leading-none rounded-[2px] text-center transition-all duration-300 cursor-pointer inline-block border border-transparent;
+  }
+  .text-gradient {
+    /* background: var(--gradient-text); */
+    @apply bg-gradient;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* ------FORM EL------- */
+  .f__input {
+    /* @apply rounded-md outline-none w-full px-4 py-2 border-2 border-dark/60 text-dark bg-transparent focus:border-dark focus:shadow-lg; */
+    @apply font-semibold bg-muted/5 border-2 border-dark-l/30 text-sm placeholder:text-muted rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5;
+  }
+
+  .f__input-fill {
+    /* @apply w-full p-4 py-2 border border-gray-400 rounded-md text-main focus:shadow-lg; */
+    @apply font-semibold w-full p-4 py-2 border bg-white border-dark/30 rounded-md text-dark;
+  }
+  textarea.f__input {
+    @apply h-[100px]  resize-none px-4 py-2;
+  }
+  /* Errors */
+  .f__input.error {
+    @apply border-danger;
+  }
+  .f__input.error ~ .icon {
+    @apply text-danger;
+  }
+  /* .f__input.input-modern:focus {
+    background-color: black;
+  } 
+   .f__input.input-modern:placeholder-shown {
+    background-color: brown;
+  } */
+  /* ------FORM EL------- */
+
+  /* ------BTN------- */
+  /* Outlines */
+  .btn.line {
+    @apply border-dark;
+  }
+  .btn.line-dark {
+    @apply border-dark text-dark;
+  }
+  .btn.line-dark {
+    @apply border-dark text-dark;
+  }
+
+  /* Btn Appearance */
+  .btn.slim {
+    @apply py-1 px-5;
+  }
+  .btn.small {
+    @apply py-1 px-5 text-sm;
+  }
+  /* Btn States */
+  .btn:hover {
+    @apply opacity-75 shadow-bs;
+  }
+  /* ------BTN------- */
+
+  .container-x {
+    @apply max-w-[1124px] w-[95%] px-2 md:p-0 mx-auto;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .img-cover {
+    @apply w-full h-full object-cover;
+  }
+}
+
+@layer utilities {
+  /* .section-p {
+    padding-block: 90px;
+  } */
+}
