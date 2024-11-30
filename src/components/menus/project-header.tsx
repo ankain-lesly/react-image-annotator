@@ -252,7 +252,7 @@ export function ProjectHeader({
               className="flex justify-end p-4 ml-auto text-muted hover:text-danger transition">
               <BiX fontSize={28} />
             </button>
-            <ul className="container-x text-sm">
+            <ul className="container-x">
               <li
                 onClick={() => {}}
                 className="p-2 flex gap-2 hover:opacity-50 cursor-pointer transition items-center">
@@ -293,7 +293,7 @@ export function ProjectHeader({
               </li>
             </ul>
 
-            <div className="mt-10 flex flex-col gap-4 container-x">
+            <div className="mt-10 flex flex-col gap-4 container-x opacity-10">
               <Link
                 to="#"
                 className="btn w-full p-3 px-5 rounded-full btn-primary text-white text-sm">

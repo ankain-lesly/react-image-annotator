@@ -50,6 +50,8 @@ const ImageAnnotator = forwardRef<any, Props>(
       null
     );
 
+    // useEffect(() => {}, []);
+
     useEffect(() => {
       const img = new window.Image();
       img.src = loadImageBlob(image);
@@ -62,7 +64,6 @@ const ImageAnnotator = forwardRef<any, Props>(
       };
     }, [image]);
 
-    // TODO: Duplicate Key >> Duplicate Element on render
     const handleMouseDown = (e: any) => {
       // console.log("LOG: Mouse Down");
 
@@ -134,22 +135,15 @@ const ImageAnnotator = forwardRef<any, Props>(
       );
     };
 
-    console.log(stageContainerRef.current?.clientWidth);
-
-    const stageContainerWidth =
-      stageContainerRef.current?.clientWidth || window.innerWidth - 20;
+    // const stageContainerWidth =
+    //   stageContainerRef.current?.clientWidth || window.innerWidth - 20;
+    const stageContainerWidth = window.innerWidth - 20;
     const stageWidth = Math.min(stageSize.width, stageContainerWidth);
 
-    //
-    console.log("VAL: ");
-    console.log(
-      getHeight(stageSize.width, stageSize.height, stageContainerWidth)
-    );
-    console.log(stageSize.height);
     return (
       <section className="py-8 h-[calc(100vh-60px)] flex-center">
         <div className="container-x">
-          <div className="w-max_ max-w-full mx-auto">
+          <div className="w-max max-w-full mx-auto">
             <header className="flex items-center justify-between mb-4">
               <h4
                 className="text-lg flex-center gap-2"

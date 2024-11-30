@@ -71,8 +71,8 @@ export function getCOCOData(
       date_created: Date().toLocaleString(),
       licenses: "---",
     },
-    images: images.map((img, index) => ({
-      id: index + 1,
+    images: images.map((img) => ({
+      id: img.id,
       // width: img.width,
       // height: img.height,
       file_name: img.name,
@@ -95,8 +95,8 @@ export function getCOCOData(
         is_crowd: 0,
       };
     }),
-    labels: labels.map((label, index) => ({
-      id: index + 1,
+    labels: labels.map((label) => ({
+      id: label.id,
       name: label.name,
       color: label.color,
     })),
