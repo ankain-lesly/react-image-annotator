@@ -1,5 +1,4 @@
 import {
-  Check,
   ChevronLeft,
   CircleDot,
   Download,
@@ -14,7 +13,6 @@ import {
   Undo,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { Label } from "@/screens/new-project/label-manager";
 import { Dispatch, SetStateAction, useState } from "react";
 import { Button } from "../ui/button";
 import {
@@ -32,23 +30,20 @@ import {
 import ModalOverlay from "../modals/ui/modal-overlay";
 import { useContextProvider } from "@/store/context-provider";
 import { IconExchange } from "@/assets";
+import { LoaderIcon } from "react-hot-toast";
 
 interface Props {
-  labels: Label[];
-  setActiveLabel: Dispatch<SetStateAction<Label | null>>;
-  activeLabel: Label | null;
   shape: AnnotationShape;
   setShape: Dispatch<SetStateAction<AnnotationShape>>;
+  isSaving: boolean;
   // Actions
   handleExport: (a: AnnotationType) => void;
   handleDownloadImage: (a?: boolean) => void;
 }
 
 export function ProjectHeader({
-  labels,
-  setActiveLabel,
-  activeLabel,
   setShape,
+  isSaving,
   shape,
   handleExport,
   handleDownloadImage,
@@ -56,10 +51,6 @@ export function ProjectHeader({
   const navigate = useNavigate();
   const { setModal } = useContextProvider();
   const [isSidebar, setIsSidebar] = useState(false);
-  const handleLabel = (label: Label) => {
-    setActiveLabel(label);
-    // toast("Label changed to " + label.name);
-  };
 
   const handleShape = (shape: AnnotationShape) => {
     setShape(shape);
@@ -91,7 +82,7 @@ export function ProjectHeader({
     <>
       <header>
         <nav className="bg-gray-800 text-white">
-          <div className="container-x h-16 mx-auto flex justify-between items-center">
+          <div className="container-x h-16 mx-auto flex justify-start items-center">
             <div className="flex-center gap-3">
               <Link
                 to="#"
@@ -99,48 +90,6 @@ export function ProjectHeader({
                 className="font-krona font-normal flex-center gap-2">
                 <ChevronLeft />
               </Link>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="">
-                  {activeLabel ? (
-                    <div className="px-2 gap-2 flex-center py-1 border border-muted rounded-full bg-dark-l hover:opacity-60">
-                      <div
-                        className="size-4 rounded-full"
-                        style={{ backgroundColor: activeLabel.color }}
-                      />
-                      <p className="flex-1 text-xs line-clamp-1">
-                        {activeLabel.name}
-                      </p>
-                    </div>
-                  ) : (
-                    <Button asChild variant={"outline"}>
-                      <p className="line-clamp-1">Select a label</p>
-                    </Button>
-                  )}
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="start"
-                  sideOffset={5}
-                  className="z-50 bg-dark-l p-2 rounded-md shadow-md border border-muted/30">
-                  {labels.map((label, i) => (
-                    <div
-                      key={i}
-                      onClick={() => handleLabel(label)}
-                      className={`cursor-pointer flex items-center gap-2 text-sm px-2 py-1 rounded-md hover:bg-dark`}>
-                      <div
-                        className="size-2 rounded-full"
-                        style={{ backgroundColor: label.color }}
-                      />
-
-                      {label.name}
-                      <Check
-                        className={`w-3 ${
-                          activeLabel?.name != label.name ? "opacity-0" : ""
-                        }`}
-                      />
-                    </div>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
 
               {/* Shapes */}
               <DropdownMenu>
@@ -199,14 +148,18 @@ export function ProjectHeader({
               </DropdownMenu>
             </div>
 
-            <div className="gap-2 hidden sm:flex-center">
-              <Edit2 className="w-3" />
-              <span className="inline-block font-bold text-sm line-clamp-1">
-                Demo Project
-              </span>
+            <div className="flex-center gap-2 ml-4 sm:mx-auto">
+              <div className="gap-2 hidden sm:flex-center">
+                <Edit2 className="w-3" />
+                {/* TODO: use project details */}
+                <span className="inline-block font-bold text-sm line-clamp-1">
+                  Demo Project
+                </span>
+              </div>
+              {isSaving && <LoaderIcon className="animate-spin" />}
             </div>
 
-            <nav className="actions flex gap-3">
+            <nav className="actions flex gap-3 ml-auto">
               <Button
                 title="Undo last action"
                 className="px-1 hover:opacity-60"
@@ -255,7 +208,7 @@ export function ProjectHeader({
             <ul className="container-x">
               <li
                 onClick={() => {}}
-                className="p-2 flex gap-2 hover:opacity-50 cursor-pointer transition items-center">
+                className="p-2 opacity-15 pointer-events-none flex gap-2 hover:opacity-50 cursor-pointer transition items-center">
                 <Save className="w-4" />
                 <p>Save Project</p>
               </li>
@@ -263,7 +216,7 @@ export function ProjectHeader({
                 onClick={() => handleDownloadImage()}
                 className="p-2 flex gap-2 hover:opacity-50 cursor-pointer transition items-center">
                 <Download className="w-4" />
-                <p>Download original image</p>
+                <p>Download Current image</p>
               </li>
               <li
                 onClick={() => handleDownloadImage(true)}

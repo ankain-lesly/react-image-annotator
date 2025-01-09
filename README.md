@@ -1,14 +1,12 @@
-# Annotator
+# Image Annotator Frontend
 
-A react app for image annotation
+Image Annotator (Object Recognition System in Computer System) Created in React.js as the core frontend stack and other packages for annotation. Checkout package.json for all the list
 
-## Dev Deps
+## About
 
-- On change image
-  -- Track all images with annotation dada
+- University Of Bamenda - Coltech SWE 400 - 2024/2025
+-
 
-- Setup infere
+## Author
 
-## Update
-
-- image id in annotation file
+- Lesly Chuo - lesly@letech-cg.com

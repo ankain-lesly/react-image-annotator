@@ -60,13 +60,9 @@ declare global {
     modal: ModalPropsMain | null;
     user: UserProps | null;
     token: string | null;
-    store: StoreProps;
-    project: ProjectProps | null;
     setToken: (token?: string) => void;
-    setStore: (props: StoreProps) => void;
     setModal: (modal: ModalPropsMain | null) => void;
     setUser: (user: UserProps | null) => void;
-    setProject: (data: ProjectProps | null) => void;
   }
   // BLOCK: User Props
 
@@ -75,17 +71,23 @@ declare global {
     userId: string;
     name: string;
     email: string;
-    type: UserTypes;
-    phone: string;
-    photo: string;
     username: string;
-    emailVerified: string;
   };
 
   // Project Props
   interface ProjectProps {
-    labels: Label[];
-    images: FileProps[];
+    id: string; // Unique identifier for the project
+    projectId: string; // Unique identifier for the project
+    name: string; // Name of the annotation project
+    description?: string; // Optional description of the project
+    labels: Label[]; // Array of labels used for annotation
+    images: FileProps[]; // Array of images to be annotated
+    userId: string; // ID of the user who created the project
+    status: "active" | "completed" | "archived"; // Status of the project
+    imageCount: number; // Total number of images in the project
+    annotationData?: COCOFormatJSON; // JSON: Array of annotations made on the images
+    createdAt: string; // Timestamp for when the project was created
+    updatedAt: string; // Timestamp for when the project was last updated
   }
 
   // BLOCK: Annotation
@@ -99,9 +101,9 @@ declare global {
     width: number;
     height: number;
     labelId: number;
-    // labelName: string;
     imageId: number;
     segmentation?: number[][]; // COCO format segmentation
+    // labelName: string;
   }
 
   interface COCOFormatJSON {
@@ -116,23 +118,14 @@ declare global {
     };
     images: {
       id: number;
-      // width: number;
-      // height: number;
+      width: string;
+      height: string;
+      size: number;
       file_name: string;
-      url: string;
+      file_url: string;
       date_captured: string;
     }[];
-    annotations: {
-      shape: AnnotationShape;
-      id: string;
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-      label_id: number;
-      image_id: number;
-      segmentation?: number[][];
-    }[];
+    annotations: AnnotationProps[];
     labels: {
       id: number;
       name: string;

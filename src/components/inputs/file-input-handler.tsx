@@ -1,7 +1,11 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { BsCloudUpload } from "react-icons/bs";
 
-export type FileProps = File & { id: number; date_captured?: string };
+export type FileProps = File & {
+  id?: number;
+  file_path?: string;
+  createdAt?: string;
+};
 // export type FileProps  = {
 //   size: number;
 //   name: string;

@@ -6,17 +6,7 @@ import Image from "@/components/ui/image";
 
 export default function InitialPageLoader() {
   return (
-    // <AnimatePresence mode={"wait"}>
-    //   <motion.div
-    //     initial={{ opacity: 1 }}
-    //     animate={{ opacity: 1 }}
-    //     exit={{ opacity: 0 }}
-    //     transition={{ duration: 0.5 }}
-    //     data-label="app-transition"
-    //     className="fixed z-[200000] inset-0 bg-dark-l flex-center"
-    //     // style={styleHolder}
-    //   >
-    <div className="fixed z-[200000] inset-0 bg-dark-l flex-center">
+    <div className="fixed z-[200000] inset-0 bg-dark-l flex-center flex-col gap-20">
       <div className="flex-center relative">
         <div className="w-10 h-10 flex-center absolute animate-pulse">
           <Image src={IconFile} alt="app logo" />
@@ -26,9 +16,11 @@ export default function InitialPageLoader() {
           style={{ animationDuration: "2s" }}
         />
       </div>
-      <div className="labels text-center text-light absolute w-full bottom-4">
-        <h5 className="text-danger">annotator</h5>
-        <p className="text-xs font-bold text-muted">Make Notes Prettier</p>
+      <div className="labels text-center text-light w-full__bottom-4">
+        <h5 className="text-danger">Image Annotator</h5>
+        <p className="text-xs font-bold text-muted">
+          Annotate With Creative Clicks <br /> (Computer Vision)
+        </p>
       </div>
     </div>
     // </motion.div>

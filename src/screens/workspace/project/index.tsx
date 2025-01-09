@@ -1,16 +1,31 @@
 import { ProjectHeader } from "@/components/menus/project-header";
-import { Check, Images } from "lucide-react";
+import { Check, Images, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Label } from "../../new-project/label-manager";
 import ImageAnnotator from "./image-annotator";
 import { useContextProvider } from "@/store/context-provider";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FileProps } from "@/components/inputs/file-input-handler";
-import { cn, downloadDataURI, getCOCOData, loadImageBlob } from "@/lib/utils";
-import toast from "react-hot-toast";
+import {
+  cn,
+  convertAndDownloadPascalVOC,
+  downloadDataURI,
+  getCOCOData,
+  loadImageBlob,
+  mergeAnnotations,
+} from "@/lib/utils";
+import toast, { CheckmarkIcon } from "react-hot-toast";
+import {
+  useGetProject,
+  useMutationUpdateProject,
+} from "@/api/services/app-service";
 
 export default function WorkspacePage() {
-  const { setModal, project } = useContextProvider();
+  const { setModal } = useContextProvider();
+  const { projectId } = useParams();
+  const { data, isLoading, error } = useGetProject(projectId as string);
+  const { mutate, isPending } = useMutationUpdateProject(projectId as string);
+
   const [labels, setLabels] = useState<Label[]>([]);
   const [images, setImages] = useState<FileProps[]>([]);
   const [activeLabel, setActiveLabel] = useState<Label | null>(null);
@@ -19,9 +34,11 @@ export default function WorkspacePage() {
   const navigate = useNavigate();
   const stageRef = useRef<any>(null);
 
+  const project = data?.data as ProjectProps;
+
   const [annotations, setAnnotations] = useState<AnnotationProps[]>([]);
 
-  const handleLoadImages = () => {
+  const handleLoadGallery = () => {
     setModal({
       type: "bottom_sheet_mobile",
       label: "Select next image",
@@ -52,7 +69,7 @@ export default function WorkspacePage() {
   };
 
   useEffect(() => {
-    if (!project) {
+    if (error) {
       setModal({
         label: "Project Status",
         type: "alert",
@@ -61,44 +78,76 @@ export default function WorkspacePage() {
           setModal(null);
         },
         options: {
-          message: "You don't have an active workspace available!!",
+          message: "Could not get active project for this workspace!!",
         },
       });
-    } else {
+    } else if (project) {
       setImages(project.images);
       setLabels(project.labels);
+      setAnnotations(project?.annotationData?.annotations || []);
+      setActiveLabel(project.labels[0]);
 
       setModal({
         type: "bottom_sheet_mobile",
-        label: "Select an image",
+        label: "Gallery",
         closeBtn: false,
+        onCloseModal: () => {
+          toast("Select an image to continue");
+        },
         content: () => (
-          <div className={`flex gap-2 flex-wrap`}>
-            {project.images.map((img, i) => (
-              <ShowImages
-                key={i}
-                img={img}
-                className="max-[320px]:w-[40%] max-[320px]:min-w-20"
-                handleClick={(img) => {
-                  setActiveImage(img);
-                  setModal(null);
-                }}
-              />
-            ))}
+          <div>
+            <p className="mb-2 text-sm">Select image to annotate</p>
+            <div className={`flex gap-2 flex-wrap`}>
+              {project.images.map((img, i) => (
+                <ShowImages
+                  key={i}
+                  img={img}
+                  className="max-[320px]:w-[40%] max-[320px]:min-w-20"
+                  handleClick={(img) => {
+                    setActiveImage(img);
+                    setModal(null);
+                  }}
+                />
+              ))}
+            </div>
           </div>
         ),
-        onCloseModal: () => {
-          // CODE: override default modal close action
-        },
       });
     }
-  }, []);
+  }, [project, projectId, error]);
 
   // TODO: create function filter annotations
   const handleExport = (type: AnnotationType) => {
+    if (type == "PASCAL") {
+      convertAndDownloadPascalVOC(getCOCOData(annotations, images, labels));
+    }
     getCOCOData(annotations, images, labels, true);
 
     toast("Downloading annotation " + type.toLowerCase());
+  };
+  // Save Project
+  const handleSaveProject = () => {
+    const cocoData = getCOCOData(annotations, images, labels);
+    const formData = new FormData();
+
+    const blob = new Blob([JSON.stringify(cocoData, null, 2)], {
+      type: "application/json",
+    });
+    const jsonFile = new File([blob], "annotation.json", {
+      type: "application/json",
+    });
+
+    formData.append("annotation_file", jsonFile);
+
+    if (isPending) return;
+
+    mutate(formData, {
+      onError: () => {
+        toast.error("Could not save project.");
+      },
+      // onSuccess: () => {
+      // },
+    });
   };
 
   const handleDownloadImage = (withAnnotations?: boolean) => {
@@ -119,14 +168,23 @@ export default function WorkspacePage() {
   // CODE: handleImport
   // CODE: handleDownloadImage >> withAnnotations
   // CODE: >> select node layer >> drag and drop >>
+
+  // Loader
+  if (isLoading || !project)
+    return (
+      <div className="p-20 h-screen flex-center gap-4 w-full">
+        <Loader2 className="animate-spin" />
+        <p>Loading Projects</p>
+      </div>
+    );
+
+  // Project
   return (
     <div className="bg-dark min-h-screen">
       <ProjectHeader
+        isSaving={isPending}
         shape={shape}
         setShape={setShape}
-        labels={labels}
-        setActiveLabel={setActiveLabel}
-        activeLabel={activeLabel}
         handleExport={handleExport}
         handleDownloadImage={handleDownloadImage}
       />
@@ -138,7 +196,11 @@ export default function WorkspacePage() {
           annotations={annotations.filter(
             (ann) => ann.imageId == activeImage.id
           )}
-          setAnnotations={setAnnotations}
+          setAnnotations={(data, save) => {
+            setAnnotations((prev) => mergeAnnotations([...prev, ...data]));
+            if (save) handleSaveProject();
+            console.log("save: ", save);
+          }}
           image={activeImage}
           label={activeLabel}
           labels={labels}
@@ -151,15 +213,50 @@ export default function WorkspacePage() {
       )}
 
       {/* Div Actions */}
-      <div>
-        <button
-          onClick={handleLoadImages}
-          className={`btn flex gap-2 items-center rounded-full bg-dark-l fixed bottom-4 right-2 shadow-lg ${
-            activeLabel ? "btn-primary" : " btn-dark-l"
-          } `}>
-          <Images />
-          {!activeLabel && <span className="font-bold">images</span>}
-        </button>
+
+      <div className="workspace-bottom-sheet w-screen fixed bottom-4 right-2">
+        <div className="flex items-center justify-between w-full">
+          {/* Labels */}
+          <div></div>
+
+          {/* Labels */}
+          <div className="relative w-full">
+            <div className="relative w-[calc(100vw-50px)] overflow-auto">
+              <ul className="flex gap-2 w-max mx-auto bg-dark/20 p-2 rounded-full backdrop-blur-sm">
+                {labels.map((label, i) => (
+                  <li
+                    key={i}
+                    onClick={() => setActiveLabel(label)}
+                    className={`cursor-pointer`}>
+                    <span
+                      className="block size-8 rounded-full flex-center"
+                      style={{ backgroundColor: label.color }}>
+                      {activeLabel?.name == label.name && (
+                        <CheckmarkIcon color="red" />
+                      )}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <p
+              className={`font-semibold w-max mx-auto absolute left-1/2 -translate-x-1/2 -bottom-3 text-center text-sm uppercase`}
+              style={{ color: activeLabel?.color }}>
+              {activeLabel?.name}
+            </p>
+          </div>
+          {/* Gallery */}
+          <button
+            onClick={handleLoadGallery}
+            className={`btn h-12 w-12 shrink-0 sm:w-auto sm:px-4 p-0 flex-center flex gap-2 items-center rounded-full bg-dark-l shadow-lg ${
+              activeLabel ? "btn-primary" : " btn-dark-l"
+            } `}>
+            <Images className="shrink-0" />
+            <span className="font-bold text-sm hidden sm:inline-block">
+              Gallery
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -186,7 +283,7 @@ const ShowImages = ({
         "relative cursor-pointer min-w-32 h-40 flex-1 border-2 rounded-xl overflow-hidden",
         className
       )}>
-      <img src={loadImageBlob(img)} className="img-cover" alt="product image" />
+      <img src={img.file_path} className="img-cover" alt="product image" />
 
       {isAnnotated && (
         <div className="absolute top-1 right-1 size-6 bg-danger text-dark shadow-md rounded-full flex-center">

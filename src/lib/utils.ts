@@ -3,6 +3,9 @@ import { Label } from "@/screens/new-project/label-manager";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+import { js2xml } from "xml-js";
+import { saveAs } from "file-saver";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -72,11 +75,12 @@ export function getCOCOData(
       licenses: "---",
     },
     images: images.map((img) => ({
-      id: img.id,
-      // width: img.width,
-      // height: img.height,
+      id: img.id as number,
+      width: "-",
+      height: "-",
+      size: img.size,
       file_name: img.name,
-      url: "api/annotations/user/image-uuid",
+      file_url: img.file_path as string,
       date_captured: "2023-10-01T00:00:00",
     })),
     annotations: annotations.map((ann) => {
@@ -87,8 +91,8 @@ export function getCOCOData(
         y: ann.y,
         width: ann.width,
         height: ann.height,
-        label_id: ann.labelId,
-        image_id: ann.imageId,
+        labelId: ann.labelId,
+        imageId: ann.imageId,
 
         segmentation: ann.segmentation,
         area: ann.width * ann.height,
@@ -126,3 +130,68 @@ export function downloadDataURI(uri: any, filename: string) {
   document.body.removeChild(link);
   URL.revokeObjectURL(uri);
 }
+
+// Define type for grouped annotations
+interface GroupedAnnotations {
+  [key: number]: AnnotationProps[];
+}
+export const convertAndDownloadPascalVOC = (cocoData: COCOFormatJSON) => {
+  // Group annotations by image with proper typing
+  const annotationsByImage = cocoData.annotations.reduce<GroupedAnnotations>(
+    (acc, ann) => {
+      if (!acc[ann.imageId]) {
+        acc[ann.imageId] = [];
+      }
+      acc[ann.imageId].push(ann);
+      return acc;
+    },
+    {}
+  );
+
+  // Create XML for each image
+  cocoData.images.forEach((image, index) => {
+    const imageAnnotations = annotationsByImage[image.id] || [];
+    const labelMap = new Map(
+      cocoData.labels.map((label) => [label.id, label.name])
+    );
+
+    // Create JavaScript object in PASCAL VOC format
+    const pascalObject = {
+      annotation: {
+        folder: { _text: "images" },
+        filename: {
+          _text: image.file_url?.split("/").pop() || `image_${image.id}`,
+        },
+        path: { _text: image.file_url || "" },
+        source: {
+          database: { _text: cocoData.info.description },
+        },
+        size: {
+          width: { _text: String(image.width || "800") },
+          height: { _text: String(image.height || "600") },
+          depth: { _text: "3" },
+        },
+        segmented: { _text: "0" },
+        object: imageAnnotations.map((ann) => ({
+          name: { _text: labelMap.get(ann.labelId) || "unknown" },
+          pose: { _text: "Unspecified" },
+          truncated: { _text: "0" },
+          difficult: { _text: "0" },
+          bndbox: {
+            xmin: { _text: String(Math.round(ann.x)) },
+            ymin: { _text: String(Math.round(ann.y)) },
+            xmax: { _text: String(Math.round(ann.x + ann.width)) },
+            ymax: { _text: String(Math.round(ann.y + ann.height)) },
+          },
+        })),
+      },
+    };
+
+    // Convert to XML
+    const xmlString = js2xml(pascalObject, { compact: true, spaces: 2 });
+
+    // Download XML file
+    const blob = new Blob([xmlString], { type: "text/xml;charset=utf-8" });
+    saveAs(blob, `annotation_${index + 1}.xml`);
+  });
+};

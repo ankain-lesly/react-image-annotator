@@ -8,15 +8,8 @@ import {
   Transformer,
 } from "react-konva";
 import { Fragment } from "react/jsx-runtime";
-import {
-  Dispatch,
-  forwardRef,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { getHeight, loadImageBlob, mergeAnnotations } from "@/lib/utils";
+import { forwardRef, useEffect, useRef, useState } from "react";
+import { getHeight } from "@/lib/utils";
 import toast from "react-hot-toast";
 import ShapeRenderer from "./render-shape";
 import {
@@ -33,7 +26,7 @@ interface Props {
   labels: Label[];
   shape: AnnotationShape;
   annotations: AnnotationProps[];
-  setAnnotations: Dispatch<SetStateAction<AnnotationProps[]>>;
+  setAnnotations: (data: AnnotationProps[], save?: boolean) => void;
 }
 
 const ImageAnnotator = forwardRef<any, Props>(
@@ -50,11 +43,9 @@ const ImageAnnotator = forwardRef<any, Props>(
       null
     );
 
-    // useEffect(() => {}, []);
-
     useEffect(() => {
       const img = new window.Image();
-      img.src = loadImageBlob(image);
+      img.src = image?.file_path as string;
       img.onload = () => {
         setStageSize({
           width: Math.min(img.width, 800),
@@ -80,7 +71,7 @@ const ImageAnnotator = forwardRef<any, Props>(
         height: 0,
         shape,
         labelId: label.id,
-        imageId: image.id,
+        imageId: image.id as number,
       });
     };
 
@@ -105,9 +96,7 @@ const ImageAnnotator = forwardRef<any, Props>(
       if (newAnnotation.width < 9 || newAnnotation.height < 9) return;
       if (annotations.find((a) => a.id == newAnnotation.id)) return;
       setDrawing(false);
-      setAnnotations((prev) =>
-        mergeAnnotations([...prev, ...annotations, newAnnotation])
-      );
+      setAnnotations([newAnnotation], true);
       setNewAnnotation(null);
     };
 

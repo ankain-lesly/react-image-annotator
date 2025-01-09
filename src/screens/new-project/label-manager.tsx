@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label as UILabel } from "@/components/ui/label";
 import { BiTrash } from "react-icons/bi";
-import { Loader, PlusCircle } from "lucide-react";
+import { MousePointerClick, PlusCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { getRandomColor } from "@/lib/utils";
 
@@ -49,10 +49,10 @@ export function LabelManager({ labels, setLabels }: LabelManagerProps) {
   };
   return (
     <div className="space-y-4">
-      <h3 className="text-lg">Create label</h3>
-      {/*  */}
+      <h3 className="text-lg">Your labels</h3>
+      <p>What do you want to annotate?</p>
       <div className="py-2 space-y-2">
-        <UILabel>New Label</UILabel>
+        <UILabel>Create a label</UILabel>
         <div className="flex gap-2">
           <Input
             type="color"
@@ -64,7 +64,8 @@ export function LabelManager({ labels, setLabels }: LabelManagerProps) {
             value={newLabelName}
             onChange={(e) => setNewLabelName(e.target.value)}
             onKeyDown={(e) => e.key == "Enter" && handleCreateLabel()}
-            placeholder="Label name"
+            autoComplete="on"
+            placeholder="Enter label name.."
           />
           <Button
             onClick={handleCreateLabel}
@@ -102,7 +103,7 @@ const ShowLabels = ({ labels, deleteLabel, updateLabelColor }: ShowProps) => {
         className="cursor-pointer w-10 h-8 flex-center"
         style={{ backgroundColor: label.color }}
         onClick={() => updateLabelColor(label.id)}>
-        <Loader className="w-4" />
+        <MousePointerClick className="w-5" />
       </div>
       {/* <img src={loadImageBlob(img)} className="img-cover" alt="product image" /> */}
       <p className="flex-1 line-clamp-1">{label.name}</p>

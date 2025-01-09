@@ -8,14 +8,17 @@ import { Label, LabelManager } from "./label-manager";
 import toast from "react-hot-toast";
 import { useContextProvider } from "@/store/context-provider";
 import { useNavigate } from "react-router-dom";
+import { useMutationCreateProject } from "@/api/services/app-service";
 
 export default function NewProjectPage() {
-  const { setProject, setModal } = useContextProvider();
+  const { setModal } = useContextProvider();
   const [images, setImages] = useState<FileProps[]>([]);
   const [labels, setLabels] = useState<Label[]>([]);
   const router = useNavigate();
+  const mutation = useMutationCreateProject();
 
   const handleCreate = () => {
+    // return console.log(images);
     if (!images.length || !labels.length)
       return toast("Both images and labels are required 🐭");
 
@@ -29,15 +32,29 @@ export default function NewProjectPage() {
       ),
     });
 
-    setTimeout(() => {
-      setModal(null);
-      setProject({
-        labels,
-        images,
-      });
+    // Create a FormData object to send the data
 
-      router("/workspace/project-id");
-    }, 1000);
+    const formData = new FormData();
+
+    formData.append("labels", JSON.stringify(labels));
+    formData.append("name", "Project name");
+    formData.append("status", "active");
+    formData.append("description", "About this project...");
+
+    for (let i = 0; i < images.length; i++) {
+      formData.append("images[]", images[i]); // Append each image file
+    }
+
+    mutation.mutate(formData, {
+      onError: () => {
+        setModal(null);
+        toast.error("Could not create project.");
+      },
+      onSuccess: (data) => {
+        router("/workspace/" + data?.data.projectId);
+        setModal(null);
+      },
+    });
   };
   return (
     <div className="bg-dark min-h-screen">

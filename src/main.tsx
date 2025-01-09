@@ -5,7 +5,6 @@ import ReactDOM from "react-dom/client";
 
 import "./assets/styles/global.css";
 
-import { ContextProvider } from "./store/context-provider";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import HomePage from "./screens/home";
 import NewProjectPage from "./screens/new-project";
@@ -14,6 +13,11 @@ import { AnimatePresence } from "framer-motion";
 import { Toaster } from "react-hot-toast";
 import ListWorkspacesPage from "./screens/workspace";
 import WorkspacePage from "./screens/workspace/project";
+import Login from "./screens/auth/login";
+import Register from "./screens/auth/register";
+import Logout from "./screens/auth/logout";
+import AuthWrapper from "./components/wrappers/auth-wrapper";
+import ContextWrapper from "./components/wrappers/context-wrapper";
 
 // Query Client
 
@@ -23,13 +27,27 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <ContextProvider>
+    <ContextWrapper>
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/new-project" element={<NewProjectPage />} />
-          <Route path="/workspace" element={<ListWorkspacesPage />} />
-          <Route path="/workspace/:projectId" element={<WorkspacePage />} />
+          <Route
+            path="/new-project"
+            element={<AuthWrapper layout={NewProjectPage} />}
+          />
+          <Route
+            path="/workspace"
+            element={<AuthWrapper layout={ListWorkspacesPage} />}
+          />
+          <Route
+            path="/workspace/:projectId"
+            element={<AuthWrapper layout={WorkspacePage} />}
+          />
+
+          {/* Auth */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/logout" element={<Logout />} />
         </Routes>
       </Router>
       <AnimatePresence mode="wait">
@@ -41,6 +59,6 @@ root.render(
           duration: 3000,
         }}
       />
-    </ContextProvider>
+    </ContextWrapper>
   </React.StrictMode>
 );
