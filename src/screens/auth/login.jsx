@@ -1,6 +1,5 @@
-import { useEffect } from "react";
 import { ScreenWrapper } from "../../components/wrappers/screen-wrapper";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 // import { useContextProvider } from "../../store/context-provider";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -12,9 +11,10 @@ import { login } from "../../api/services/auth-services";
 import { useContextProvider } from "../../store/context-provider";
 
 const Login = () => {
-  const { setUser, setToken } = useContextProvider();
-
+  const { setUser, setToken, user } = useContextProvider();
   const navigate = useNavigate();
+
+  if (user) return <Navigate to={"/workspace"} />;
 
   const handleSubmit = async (values, { setErrors }) => {
     const { error, data } = await login(values);
@@ -25,10 +25,6 @@ const Login = () => {
     toast.success("Welcome back " + name.split(" ").pop());
     navigate("/workspace");
   };
-  // Auto Focus
-  useEffect(() => {
-    document.getElementById("email-address")?.focus();
-  }, []);
 
   // Yup Validation Schema
   const YubSchema = Yup.object({
