@@ -47,7 +47,7 @@ export default function ListWorkspacesPage() {
             </Button>
           </header>
 
-          <div className="flex gap-5 items-start">
+          <div className="flex flex-col md:flex-row gap-5 items-start">
             <div className="p-4 md:p-6 rounded-lg border border-muted w-full sm:max-w-sm">
               <h3 className="text-lg">Workspace Status</h3>
               <div className="my-2 flex gap-2 items-center">
@@ -114,7 +114,7 @@ export default function ListWorkspacesPage() {
               </div>
             )}
             {!!projects.length && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="flex">
                 {/* Item */}
                 {projects.map((data) => (
                   <ProjectCard key={data.id} {...data} />

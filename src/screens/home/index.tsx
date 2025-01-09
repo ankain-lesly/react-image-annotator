@@ -11,6 +11,8 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useContextProvider } from "@/store/context-provider";
+import { BiEnvelope } from "react-icons/bi";
+import { BsPhone, BsWhatsapp } from "react-icons/bs";
 
 export default function HomePage() {
   return (
@@ -352,6 +354,24 @@ const LandingPage: React.FC = () => {
             </p>
             <p className="text-xs">@Group 2 | Web Programming</p>
           </div>
+        </div>
+
+        <div className="flex-center gap-4 mt-2">
+          <a
+            className="hover:opacity-50"
+            target="_blank"
+            href={"mailto:letechcg@gmail.com"}>
+            <BiEnvelope fontSize={26} />
+          </a>
+          <a
+            className="hover:opacity-50"
+            target="_blank"
+            href={"https://chat.whatsapp.com/C0QznDGcUREHciHN59oBtd"}>
+            <BsWhatsapp fontSize={24} />
+          </a>
+          <a className="hover:opacity-50">
+            <BsPhone fontSize={24} />
+          </a>
         </div>
       </footer>
     </div>

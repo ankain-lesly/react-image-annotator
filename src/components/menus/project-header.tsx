@@ -64,10 +64,7 @@ export function ProjectHeader({
         message: (
           <div className="flex-center flex-col gap-4 my-2 text-center">
             <img src={IconExchange} alt="workspace icon" className="w-28" />
-            <p>
-              Are you sure you want to exit this workspace! changes might not be
-              saved
-            </p>
+            <p>Are you sure you want to exit this workspace!</p>
           </div>
         ),
         onComplete: () => {

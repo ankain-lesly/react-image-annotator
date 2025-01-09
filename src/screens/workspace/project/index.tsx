@@ -220,8 +220,8 @@ export default function WorkspacePage() {
           <div></div>
 
           {/* Labels */}
-          <div className="relative w-full">
-            <div className="relative w-[calc(100vw-50px)] overflow-auto">
+          <div className="relative w-full flex-center">
+            <div className="relative w-[calc(100vw-50px)] sm:w-[calc(100vw-150px)] overflow-auto">
               <ul className="flex gap-2 w-max mx-auto bg-dark/20 p-2 rounded-full backdrop-blur-sm">
                 {labels.map((label, i) => (
                   <li
@@ -240,7 +240,7 @@ export default function WorkspacePage() {
               </ul>
             </div>
             <p
-              className={`font-semibold w-max mx-auto absolute left-1/2 -translate-x-1/2 -bottom-3 text-center text-sm uppercase`}
+              className={`font-semibold absolute -bottom-3 text-center text-sm uppercase`}
               style={{ color: activeLabel?.color }}>
               {activeLabel?.name}
             </p>
